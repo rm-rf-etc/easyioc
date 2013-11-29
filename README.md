@@ -26,28 +26,29 @@ during exec(), by providing the corresponding modules with a matching identifier
 ## Usage
 
 ```js
+// madeup example, but here we go...
 var easyioc = require('easyioc')
 
-function a (y,z) {
-    expect( y ).to.be('the Y function')
-    expect( z ).to.be('the Z function')
+function route_filters (server, router) {
+    // do stuff...
 }
-function b (r,s) {
-    expect( r ).to.be('the R function')
-    expect( s ).to.be('the S function')
+function models (orm, settings) {
+    // do stuff...
+}
+function appStart (express) {
+    // do stuff...
 }
 
 easyioc
-    .add('q',function(){ console.log('q has no dependencies!') })
-    .add('a',a)
-    .add('b',b)
-    .add('y',function(){ return 'the Y function' })
-    .add('z',function(){ return 'the Z function' })
-    .add('r',function(){ return 'the R function' })
-    .add('s',function(){ return 'the S function' })
+    .add( 'app',       appStart          )
+    .add( 'filters',   route_filters     )
+    .add( 'server',   'server_thing'     )
+    .add( 'router',   'my_router_module' ) // could be node_modules/my_router_module.js
+    .add( 'settings', 'settings'         ) // could be node_modules/settings.json
+    .add( 'orm',      'orm2'             )
     .add( ['../myfile.js', '../myotherfile.js'] )
-    .add('_', 'lodash-node' )
-    .add('express')
+    .add( '_', 'lodash-node' )
+    .add( 'express' )
     .exec()
 ```
 
