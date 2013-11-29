@@ -1,4 +1,3 @@
-
 Easyioc.js
 =======
 
@@ -15,10 +14,10 @@ Because you can specify any function as a dependency, you can easily adapt any e
 modules (lodash, express, etc) to suit your use-case.
 
 Use add() to include as a dependency, any of the following:
-  --any function
-  --any object
-  --any valid string for require()
-  --an array containing any of the above
+  * any function
+  * any object
+  * any valid string for require()
+  * an array containing any of the above
 
 Optionally provide a name as the first argument. Every function passed to add() will be
 parsed for the names in the arguments list, and easyioc will then invoke that function
@@ -46,6 +45,10 @@ easyioc
     .add('z',function(){ return 'the Z function' })
     .add('r',function(){ return 'the R function' })
     .add('s',function(){ return 'the S function' })
+    .add('_', 'lodash-node' )
+    .add('express')
+    .add( ['../myfile.js', '../myotherfile.js'] )
+    .add( 'express' )
     .exec()
 ```
 
