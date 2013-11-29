@@ -1,6 +1,6 @@
 {
   "name": "easyioc",
-  "version": "0.0.01",
+  "version": "0.0.02",
   "description": "Simplified, highly flexible, recursive IoC service provider.",
   "main": "easyioc.js",
   "dependencies": {
