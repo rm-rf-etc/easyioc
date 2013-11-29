@@ -40,11 +40,11 @@ function appStart (express) {
 }
 
 easyioc
-    .add( 'app',       appStart          )
+    .add(  appStart  )
+    .add( 'settings' ) // could be node_modules/settings.json
     .add( 'filters',   route_filters     )
     .add( 'server',   'server_thing'     )
     .add( 'router',   'my_router_module' ) // could be node_modules/my_router_module.js
-    .add( 'settings', 'settings'         ) // could be node_modules/settings.json
     .add( 'orm',      'orm2'             )
     .add( ['../myfile.js', '../myotherfile.js'] )
     .add( '_', 'lodash-node' )
@@ -58,6 +58,8 @@ module.exports = function(views, controllers, router) {
     //...
 }
 ```
+
+Easyioc works really well with [filefetcher](http://github.com/rm-rf-etc/filefetcher). Together, you can use them to automatically load your entire project structure, really easily and according to your own specs.
 
 ## How To Run The Tests
 
