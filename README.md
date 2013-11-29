@@ -1,21 +1,32 @@
 Easyioc.js
 =======
 
-Really easy to use IoC for node.js apps.
+Stupidly simple _Inversion of Control_ for node.js apps.
 
 `npm install easyioc`
 
 
 ## Description
 
-Stupidly simple IoC loading system. Detects and explains circular dependencies,
-and accepts objects, `require()` strings, functions, arrays of files, json files... Just about anything you
-might want to depend upon.
+```js
+easyioc
+    .add( ['file1','file2','file3'] )
+    .add( 'moduleA', 'my_file_a' )
+    .add( 'moduleB', 'my_file_b' )
+    .add( '_', 'lodash-node' )
+    .exec()
+```
+
+Detects and explains circular dependencies: `[Error: Dependency circle encountered: Mod_B  ➤  Mod_C  ➤  Mod_A  ➤  Mod_B]`
+
+Alerts for missing dependencies: `Error: Module "a" requires unknown dependency "thing".`
+
+Accepts objects, `require()` strings, functions, arrays of files, json files... Just about anything you could want.
 
 Because you can specify any function as a dependency, you can easily adapt any existing
 modules (lodash, express, etc) to suit your use-case.
 
-Use add() to include as a dependency, any of the following:
+Use add() to include any of the following:
   * any function
   * any object
   * any valid string for require()
@@ -23,7 +34,8 @@ Use add() to include as a dependency, any of the following:
 
 Optionally provide a name as the first argument. Every function passed to `add()` will be
 parsed for the names in the arguments list, and easyioc will then invoke that function
-during `exec()`, by providing the corresponding modules with a matching identifier.
+during `exec()`, by providing the corresponding modules which match the identifier.
+
 
 ## Usage
 

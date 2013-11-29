@@ -1,7 +1,7 @@
 {
   "name": "easyioc",
-  "version": "0.0.03",
-  "description": "Simplified, highly flexible, recursive IoC service provider.",
+  "version": "0.1.03",
+  "description": "Stupidly simple recursive IoC service provider.",
   "main": "easyioc.js",
   "dependencies": {
     "lodash-node": "~2.4.0"
@@ -16,8 +16,13 @@
   },
   "keywords": [
     "simple",
+    "dependency",
+    "dependencies",
     "recursive",
     "ioc",
+    "inversion of control",
+    "inversion",
+    "control",
     "loader",
     "loading",
     "module"

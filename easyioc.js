@@ -20,20 +20,10 @@ var path = [] // How we detect circular dependencies.
 function Module (name, module) {
     var loaded = null
 
-    this.load = function(){
+    this.fetch = function(){
         if (!loaded) {
             if (_.isFunction(module)) {
-                var deps = fetchDeps(module)
-
-                deps = deps.map(function(dep){
-                    if (_.contains(path, dep))
-                        throw new Error('Dependency circle encountered: '+path.concat(dep).join('  ➤  ')) // ▷ ➔ ➤ ▸ ▶ ➠ ⧐ ➞
-                    path.push(dep)
-                    var mod = load(name, dep)
-                    path.pop()
-                    return mod
-                })
-                loaded = module.apply(new Object, deps)
+                loaded = execFuncLoad(name, module)
             }
             else if (isObject(module))
                 loaded = module
@@ -47,27 +37,29 @@ function Module (name, module) {
 function FileGroup (files) {
     var loaded = null
 
-    this.load = function(){
+    this.fetch = function(){
         if (!loaded) {
 
-            loaded = files.map(function(file){
+            loaded = _.each(files, function(file){
+
+                if (_.isFunction(file))
+                    return execFuncLoad(makeId(), file)
+
+                if (isObject(file))
+                    return file
 
                 if (!_.isString(file))
-                    throw new Error('Invalid file path: "'+file+'".')
+                    throw new Error('easyioc.exec(): Invalid object in array: "'+file+'". Must be either function, string, or object (although the latter is discouraged).')
 
                 if (!require.resolve(file))
                     throw new Error('Require could not resolve "'+file+'".')
 
                 var module = require(file)
 
-                if (_.isFunction(module)) {
-                    // var deps = fetchDeps(module)
-                    var deps = fetchDeps(module).map(function(dep){
-                        return load(file, dep)
-                    })
-                    return module.apply(new Object, deps)
-                }
-                else if (isObject(module))
+                if (_.isFunction(module))
+                    return execFuncLoad(makeId(), module)
+
+                else
                     return module
             })
         }
@@ -75,13 +67,28 @@ function FileGroup (files) {
     }
 }
 
+
+
+function execFuncLoad (name, module) { // This where we detect circular dependency paths.
+    var deps = fetchDeps(module)
+
+    // deps = _.each(deps, function(dep){ // _.each() doesn't work here... odd.
+    deps = deps.map(function(dep){
+        if (_.contains(path, dep))
+            throw new Error('Dependency circle encountered: '+path.concat(dep).join('  ➤  ')) // ▷ ➔ ➤ ▸ ▶ ➠ ⧐ ➞
+        path.push(dep)
+        var mod = load(name, dep)
+        path.pop()
+        return mod
+    })
+    return module.apply(new Object, deps)
+}
 function load (func, dep) {
     if (_.has(modules, dep))
-        return modules[dep].load() //! to-do: detect circular dependencies here.
+        return modules[dep].fetch()
     else
         throw new Error('Module "'+func+'" requires unknown dependency "'+dep+'".')
 }
-
 function fetchDeps (target) {
     if (target.length) {
         var args_regex = /^function\s*[^\(]*\(\s*([^\)]*)\)/m
@@ -154,7 +161,7 @@ function exec () {
     adding = {}
 
     for (var each in loading)
-        loading[each].load()
+        loading[each].fetch()
     
     return public_methods
 }
