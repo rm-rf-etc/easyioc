@@ -1,5 +1,5 @@
 Easyioc.js
-=======
+==========
 
 Stupidly simple _Inversion of Control_ for node.js apps.
 
@@ -60,7 +60,7 @@ easyioc
     .add( 'server',   'server_thing'     )
     .add( 'router',   'my_router_module' ) // could be node_modules/my_router_module.js
     .add( 'orm',      'orm2'             )
-    .add( ['../myfile.js', '../myotherfile.js'] )
+    .add( ['../file1', '../file2', '../file3'] )
     .add( '_', 'lodash-node' )
     .add( 'express' )
     .exec()
@@ -70,7 +70,7 @@ Let's say you have some of your own modules in `node_modules/` in your project. 
 can `require()` them, you can pass them by name as a string to add(), and it will require
 them. You can also name your module, so if your file is called "framework_views_module",
 you can do `.add('views', 'framework_views_module')`, and now your module will be available
-to all other modules of yours, which have "views" in the arguments list. Like this:
+to all other modules which require a "views" parameter in the arguments list. Like this:
 ```js
 module.exports = function(views, controllers, router) {
     //...
