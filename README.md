@@ -7,7 +7,7 @@ Really easy to use IoC for node.js apps.
 ## Description
 
 Really stupidly simple IoC loading system. Detects and explains circular dependencies,
-and accepts objects, require modules, functions, json files... Just about anything you
+and accepts objects, require modules, functions, arrays of files, json files... Just about anything you
 might want to depend upon.
 
 Because you can specify any function as a dependency, you can easily adapt any existing
