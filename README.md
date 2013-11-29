@@ -9,7 +9,7 @@ Really easy to use IoC for node.js apps.
 ## Description
 
 Stupidly simple IoC loading system. Detects and explains circular dependencies,
-and accepts objects, require() strings, functions, arrays of files, json files... Just about anything you
+and accepts objects, `require()` strings, functions, arrays of files, json files... Just about anything you
 might want to depend upon.
 
 Because you can specify any function as a dependency, you can easily adapt any existing
@@ -21,9 +21,9 @@ Use add() to include as a dependency, any of the following:
   * any valid string for require()
   * an array containing any of the above
 
-Optionally provide a name as the first argument. Every function passed to add() will be
+Optionally provide a name as the first argument. Every function passed to `add()` will be
 parsed for the names in the arguments list, and easyioc will then invoke that function
-during exec(), by providing the corresponding modules with a matching identifier.
+during `exec()`, by providing the corresponding modules with a matching identifier.
 
 ## Usage
 
@@ -54,14 +54,20 @@ easyioc
     .exec()
 ```
 
-Let's say you have some of your own modules in node_modules/ in your project. Since you can require() them, you can pass them by name as a string to add(), and it will require them. You can also name your module, so if your file is called "framework_views_module", you can doing `.add('views', 'framework_views_module')`, and now your module will be available to all other modules of yours, which have "views" in the arguments list. Like this:
+Let's say you have some of your own modules in `node_modules/` in your project. Since you
+can `require()` them, you can pass them by name as a string to add(), and it will require
+them. You can also name your module, so if your file is called "framework_views_module",
+you can do `.add('views', 'framework_views_module')`, and now your module will be available
+to all other modules of yours, which have "views" in the arguments list. Like this:
 ```js
 module.exports = function(views, controllers, router) {
     //...
 }
 ```
 
-Easyioc works really well with [filefetcher](http://github.com/rm-rf-etc/filefetcher). Together, you can use them to automatically load your entire project structure, really easily and according to your own specs.
+Easyioc works really well with [filefetcher](http://github.com/rm-rf-etc/filefetcher).
+Together, they can automatically load your entire project, very simply, and according to
+your own specs.
 
 ## How To Run The Tests
 
