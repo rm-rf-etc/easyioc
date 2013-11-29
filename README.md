@@ -3,6 +3,8 @@ Easyioc.js
 
 Really easy to use IoC for node.js apps.
 
+`npm install easyioc`
+
 
 ## Description
 
