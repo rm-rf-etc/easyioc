@@ -77,9 +77,9 @@ module.exports = function(views, controllers, router) {
 }
 ```
 
-Easyioc works really well with [filefetcher](http://github.com/rm-rf-etc/filefetcher).
-Together, they can automatically load your entire project, very simply, and according to
-your own specs.
+Easyioc works really well with filefetcher ([git](http://github.com/rm-rf-etc/filefetcher))
+([npm](http://npmjs.org/package/filefetcher)). Together, they can automatically load your
+entire project, very simply, and according to your own specs.
 
 ## How To Run The Tests
 
