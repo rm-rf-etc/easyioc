@@ -121,8 +121,8 @@ module.exports = function(models){
 `some_fileB.js`
 ```js
 module.exports = function(models){
+    models.modelC = {property: 'some data'}
     models.modelD = {property: 'some data'}
-    models.modelE = {property: 'some data'}
 }
 ```
 
@@ -164,14 +164,17 @@ easyioc.add('controllers', {})
 filefetcher([
     { path:'./app/controllers/', recursive:true, type:'js', cb:easyioc.add }
 ])
+easyioc.exec()
 ```
 
 And those files basically do this:
+`any model js file in my project`
 ```js
 module.exports = function(models){
     models.whatever = 'some data'
 }
 ```
+`any controller js file in my project`
 ```js
 module.exports = function(controllers, models){
     controllers.index = function(req,res){
