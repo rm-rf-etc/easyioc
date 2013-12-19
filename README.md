@@ -3,7 +3,7 @@ Easyioc.js
 
 Stupidly simple _Inversion of Control_ for node.js apps.
 
-`npm install easyioc`
+[![NPM](https://nodei.co/npm/easyioc.png?downloads=true)](https://nodei.co/npm/easyioc/)
 
 
 ## Description
@@ -80,6 +80,105 @@ module.exports = function(views, controllers, router) {
 Easyioc works really well with filefetcher ([git](http://github.com/rm-rf-etc/filefetcher))
 ([npm](http://npmjs.org/package/filefetcher)). Together, they can automatically load your
 entire project, very simply, and according to your own specs.
+
+## Recursive Design
+Easyioc also supports providing itself as a dependency, which allows subsequent modules to
+add even more modules and execute once more.
+```js
+var easyioc = require('easyioc')
+
+// None of this will happen until...
+function myApp (easyioc) {
+    function bestModuleEvar(_){
+        return function MakeRofls(){
+            // I don't even know...
+        }
+    }
+    easyioc
+        .add( 'best_evar', bestModuleEvar )
+        .add( '_', 'lodash-node' )
+        .exec()
+}
+
+// ...we call exec() after adding myApp here.
+easyioc
+    .add(  myApp  )
+    .add(  'easyioc', easyioc  )
+    .exec()
+```
+
+## Sequential Loading
+Easyioc supports a convention over configuration solution for sequentially loading object data.
+"Wtf does that mean?", you're probably thinking...
+
+`some_fileA.js`
+```js
+module.exports = function(models){
+    models.modelA = {property: 'some data'}
+    models.modelB = {property: 'some data'}
+}
+```
+`some_fileB.js`
+```js
+module.exports = function(models){
+    models.modelD = {property: 'some data'}
+    models.modelE = {property: 'some data'}
+}
+```
+
+So lets say we have these ^ files, and we need to have the data in these objects loaded so we can use
+them in other files. Easyioc has no way of detecting if every expected model has been added, and if
+you have numerous files with data that you want loaded, and all of them constitute one module of your
+application, you need a way to load all of them before loading any modules which might try to access
+a particular model. So here's the solution for that:
+
+```js
+var easyioc = require('easyioc')
+
+easyioc
+    .add( 'models', {} )
+    .add( ['some_fileA', 'some_fileB'] )
+    .exec()
+    .add( 'model_manipulator_thing' ) // some module which expects models A, B, C, or D, to exist.
+    .exec()
+```
+
+How about a real example from another project. I have an arbitrary number of models in an arbitrary
+number of files, and an arbitrary number of controllers in an arbitrary number of controller files.
+I want my controllers to be able to reference any of my models whenever I decide that they need to.
+Here's how to solve that:
+
+```js
+var easyioc = require('easyioc')
+var filefetcher = require('filefetcher')
+
+// so here we're adding an empty object and calling it models.
+easyioc.add('models', {})
+filefetcher([
+    { path:'./app/models/', recursive:true, type:'js', cb:easyioc.add }
+])
+easyioc.exec()
+
+// and we're doing the same thing again to create our controllers object.
+easyioc.add('controllers', {})
+filefetcher([
+    { path:'./app/controllers/', recursive:true, type:'js', cb:easyioc.add }
+])
+```
+
+And those files basically do this:
+```js
+module.exports = function(models){
+    models.whatever = 'some data'
+}
+```
+```js
+module.exports = function(controllers, models){
+    controllers.index = function(req,res){
+        res.end( models.whatever )
+    }
+}
+```
 
 ## How To Run The Tests
 
