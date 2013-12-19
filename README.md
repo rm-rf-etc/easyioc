@@ -167,7 +167,8 @@ filefetcher([
 easyioc.exec()
 ```
 
-And those files basically do this:
+And those files basically do this:  
+
 `any model js file in my project`
 ```js
 module.exports = function(models){
