@@ -1,6 +1,9 @@
 
 var _ = require('lodash-node')
-function isObject (thing) { return typeof thing === 'object' }
+function isObject(thing){
+    if (typeof thing === 'object')
+        return {}.toString.apply(thing) === '[object Object]'
+}
 
 
 var public_methods = {
@@ -17,7 +20,7 @@ var adding = {} // Allows add() to be called during exec() execution.
 var path = [] // How we detect circular dependencies.
 
 
-function Module (name, module) {
+function Module(name, module){
     var loaded = null
 
     this.fetch = function(){
@@ -156,7 +159,7 @@ function add (name, target) {
 /**
  *
  */
-function exec () {
+function exec(){
     var loading = adding
     adding = {}
 
@@ -169,7 +172,7 @@ function exec () {
 /**
  *
  */
-function empty () {
+function empty(){
     adding = {}
     modules = {}
     return public_methods

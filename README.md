@@ -103,7 +103,7 @@ function myApp (easyioc) {
 // ...we call exec() after adding myApp here.
 easyioc
     .add(  myApp  )
-    .add(  'easyioc', easyioc  )
+    .add( 'easyioc', easyioc  )
     .exec()
 ```
 
