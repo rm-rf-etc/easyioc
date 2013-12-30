@@ -1,7 +1,8 @@
 Easyioc.js
 ==========
 
-Stupidly simple _Inversion of Control_ for node.js apps.
+Stupidly simple _Inversion of Control_ for node.js apps. Belongs to the Encore framework
+project: [encore.jit.su](http://encore.jit.su) | [github.com/rm-rf-etc/encore](http://github.com/rm-rf-etc/encore)  
 
 [![NPM](https://nodei.co/npm/easyioc.png?downloads=true)](https://nodei.co/npm/easyioc/)
 
