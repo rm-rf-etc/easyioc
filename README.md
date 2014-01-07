@@ -6,120 +6,132 @@ project: [encore.jit.su](http://encore.jit.su) | [github.com/rm-rf-etc/encore](h
 
 [![NPM](https://nodei.co/npm/easyioc.png?downloads=true)](https://nodei.co/npm/easyioc/)
 
+Easyioc.js
+==========
+
+Stupidly simple _Inversion of Control_ for node.js apps.
+
+`npm install easyioc`
+
 
 ## Description
 
+Easyioc is a container. You add modules to the container. Those modules receive their dependencies
+automatically from the container when exec() is invoked.
+
 ```js
-easyioc
-    .add( ['file1','file2','file3'] )
-    .add( 'moduleA', 'my_file_a' )
-    .add( 'moduleB', 'my_file_b' )
-    .add( '_', 'lodash-node' )
-    .exec()
+// simplified example
+
+var ioc = require('easyioc')
+var example = { foo:'bar' }
+
+// Add the example object, but name it "models".
+ioc
+.add('models', example)
+.add('app', app)
+.exec()
+
+function app(models){ // 'app' requires 'models'
+    console.log(models)
+    // prints: { foo: 'bar' }
+}
 ```
 
 Detects and explains circular dependencies: `[Error: Dependency circle encountered: Mod_B  ➤  Mod_C  ➤  Mod_A  ➤  Mod_B]`
 
 Alerts for missing dependencies: `Error: Module "a" requires unknown dependency "thing".`
 
-Accepts objects, `require()` strings, functions, arrays of files, json files... Just about anything you could want.
-
 Because you can specify any function as a dependency, you can easily adapt any existing
-modules (lodash, express, etc) to suit your use-case.
+modules (lodash, express, etc) to suit your use.
 
 Use add() to include any of the following:
 * any function
 * any object
 * any valid string for require()
-* an array containing any of the above
-
-Optionally provide a name as the first argument. Every function passed to `add()` will be
-parsed for the names in the arguments list, and easyioc will then invoke that function
-during `exec()`, by providing the corresponding modules which match the identifier.
-
+* or any array of these
 
 ## Usage
 
 ```js
-// madeup example, but here we go...
-var easyioc = require('easyioc')
-
-function route_filters (server, router) {
-    // do stuff...
+// moduleA.js
+module.exports = function(){
+    return 1+2
 }
-function models (orm, settings) {
-    // do stuff...
-}
-function appStart (express) {
-    // do stuff...
-}
-
-easyioc
-    .add(  appStart  )
-    .add( 'settings' ) // could be node_modules/settings.json
-    .add( 'filters',   route_filters     )
-    .add( 'server',   'server_thing'     )
-    .add( 'router',   'my_router_module' ) // could be node_modules/my_router_module.js
-    .add( 'orm',      'orm2'             )
-    .add( ['./file1', './file2', './file3'] )
-    .add( '_', 'lodash-node' )
-    .add( 'express' )
-    .exec()
 ```
-
-Let's say you have some of your own modules in `node_modules/` in your project. Since you
-can `require()` them, you can pass them by name as a string to add(), and it will require
-them. You can also name your module, so if your file is called "framework_views_module",
-you can do `.add('views', 'framework_views_module')`, and now your module will be available
-to all other modules which require a "views" parameter in the arguments list. Like this:
 ```js
-module.exports = function(views, controllers, router) {
-    //...
+// moduleB.js
+module.exports = function(){
+    return 'A'+'B'
 }
 ```
+```js
+// main.js
+module.exports = function(A, B){
+    console.log(A, B)
+}
+```
+```js
+// start.js
+var ioc = require('easyioc')
+ioc
+.add( 'main', __dirname+'/main' )
+.add( 'A', __dirname+'/moduleA' )
+.add( 'B', __dirname+'/moduleB' )
+.exec()
+
+// use __dirname if require gets lost
+```
+
+The first argument (optional) is the name you are giving the module which all other
+modules will use to require it. Easyioc.add('redis') will add a module named 'redis'
+which equals `require('redis')`.
+
+Arrays are intended for adding many files which don't need to be required by other
+modules. However, if you provide a name, then the resulting module will be an array
+containing the objects and/or functions and/or `require` results from the array you
+provided.
 
 Easyioc works really well with filefetcher ([git](http://github.com/rm-rf-etc/filefetcher))
 ([npm](http://npmjs.org/package/filefetcher)). Together, they can automatically load your
 entire project, very simply, and according to your own specs.
 
+
 ## Recursive Design
+
 Easyioc also supports providing itself as a dependency, which allows subsequent modules to
 add even more modules and execute once more.
 ```js
 var easyioc = require('easyioc')
 
-// None of this will happen until...
-function myApp (easyioc) {
+function app(ioc){
+
     function bestModuleEvar(_){
-        return function MakeRofls(){
-            // I don't even know...
-        }
+        console.log( _(process).has('exit') )
     }
-    easyioc
-        .add( 'best_evar', bestModuleEvar )
+    ioc
+        .add( bestModuleEvar )
         .add( '_', 'lodash-node' )
         .exec()
 }
 
-// ...we call exec() after adding myApp here.
 easyioc
-    .add(  myApp  )
-    .add( 'easyioc', easyioc  )
+    .add(  app  )
+    .add( 'ioc', easyioc  )
     .exec()
 ```
 
 ## Sequential Loading
-Easyioc supports a convention over configuration solution for sequentially loading object data.
-"Wtf does that mean?", you're probably thinking...
+If you need to load data into a module before other modules are to run,
+you can invoke exec() to control the execution order.
 
-`some_fileA.js`
+`fileA.js`
 ```js
 module.exports = function(models){
     models.modelA = {property: 'some data'}
     models.modelB = {property: 'some data'}
 }
 ```
-`some_fileB.js`
+`fileB.js`
 ```js
 module.exports = function(models){
     models.modelC = {property: 'some data'}
@@ -128,61 +140,17 @@ module.exports = function(models){
 ```
 
 So lets say we have these ^ files, and we need to have the data in these objects loaded so we can use
-them in other files. Easyioc has no way of detecting if every expected model has been added, and if
-you have numerous files with data that you want loaded, and all of them constitute one module of your
-application, you need a way to load all of them before loading any modules which might try to access
-a particular model. So here's the solution for that:
+them in other files.
 
 ```js
 var easyioc = require('easyioc')
 
 easyioc
     .add( 'models', {} )
-    .add( ['some_fileA', 'some_fileB'] )
+    .add( ['fileA', 'fileB'] )
     .exec()
-    .add( 'model_manipulator_thing' ) // some module which expects models A, B, C, or D, to exist.
+    .add( 'controllers' ) // our controllers make reference to the models we created above.
     .exec()
-```
-
-How about a real example from another project. I have an arbitrary number of models in an arbitrary
-number of files, and an arbitrary number of controllers in an arbitrary number of controller files.
-I want my controllers to be able to reference any of my models whenever I decide that they need to.
-Here's how to solve that:
-
-```js
-var easyioc = require('easyioc')
-var filefetcher = require('filefetcher')
-
-// so here we're adding an empty object and calling it models.
-easyioc.add('models', {})
-filefetcher([
-    { path:'./app/models/', recursive:true, type:'js', cb:easyioc.add }
-])
-easyioc.exec()
-
-// and we're doing the same thing again to create our controllers object.
-easyioc.add('controllers', {})
-filefetcher([
-    { path:'./app/controllers/', recursive:true, type:'js', cb:easyioc.add }
-])
-easyioc.exec()
-```
-
-And those files basically do this:  
-
-`any model js file in my project`
-```js
-module.exports = function(models){
-    models.whatever = 'some data'
-}
-```
-`any controller js file in my project`
-```js
-module.exports = function(controllers, models){
-    controllers.index = function(req,res){
-        res.end( models.whatever )
-    }
-}
 ```
 
 ## How To Run The Tests
