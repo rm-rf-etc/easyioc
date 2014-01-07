@@ -153,7 +153,7 @@ easyioc
     .exec()
     .add( 'controllers' )
     .exec()
-// our controllers make reference to the models we created above.
+// Assume our controllers make reference to the models we created above.
 ```
 
 ## How To Run The Tests
