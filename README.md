@@ -126,15 +126,15 @@ easyioc
 If you need to load data into a module before other modules are to run,
 you can invoke exec() to control the execution order.
 
-`fileA.js`
 ```js
+// fileA.js
 module.exports = function(models){
     models.modelA = {property: 'some data'}
     models.modelB = {property: 'some data'}
 }
 ```
-`fileB.js`
 ```js
+// fileB.js
 module.exports = function(models){
     models.modelC = {property: 'some data'}
     models.modelD = {property: 'some data'}
