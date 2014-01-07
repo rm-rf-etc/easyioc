@@ -8,13 +8,6 @@ Belongs to the Encore framework project:
 
 [![NPM](https://nodei.co/npm/easyioc.png?downloads=true)](https://nodei.co/npm/easyioc/)
 
-Easyioc.js
-==========
-
-Stupidly simple _Inversion of Control_ for node.js apps.
-
-`npm install easyioc`
-
 
 ## Description
 
