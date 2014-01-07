@@ -151,8 +151,9 @@ easyioc
     .add( 'models', {} )
     .add( ['fileA', 'fileB'] )
     .exec()
-    .add( 'controllers' ) // our controllers make reference to the models we created above.
+    .add( 'controllers' )
     .exec()
+// our controllers make reference to the models we created above.
 ```
 
 ## How To Run The Tests
