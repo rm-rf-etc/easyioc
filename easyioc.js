@@ -1,5 +1,5 @@
 
-var _ = require('lodash-node')
+var _ = require('lodash')
 function isObject(thing){
     if (typeof thing === 'object')
         return {}.toString.apply(thing) === '[object Object]'
@@ -75,9 +75,8 @@ function FileGroup (files) {
 function execFuncLoad (name, module) { // This where we detect circular dependency paths.
     var deps = fetchDeps(module)
 
-    // deps = _.each(deps, function(dep){ // _.each() doesn't work here... odd.
     deps = deps.map(function(dep){
-        if (_.contains(path, dep))
+        if (_.includes(path, dep))
             throw new Error('Dependency circle encountered: '+path.concat(dep).join('  ➤  ')) // ▷ ➔ ➤ ▸ ▶ ➠ ⧐ ➞
         path.push(dep)
         var mod = load(name, dep)
@@ -96,7 +95,8 @@ function fetchDeps (target) {
     if (target.length) {
         var args_regex = /^function\s*[^\(]*\(\s*([^\)]*)\)/m
         var text = target.toString()
-        return text.match(args_regex)[1].split(',').map(function(e){return e.trim()})
+        var res = text.match(args_regex)[1].split(',').map(function(e){return e.trim()})
+        return res
     }
     return []
 }
@@ -149,7 +149,7 @@ function add (name, target) {
 
             else if (_.isFunction(target))
                 module = target
-        
+
             doAdd(name, new Module(name, module))
         }
     }
@@ -163,9 +163,10 @@ function exec(){
     var loading = adding
     adding = {}
 
-    for (var each in loading)
+    for (var each in loading) {
         loading[each].fetch()
-    
+    }
+
     return public_methods
 }
 

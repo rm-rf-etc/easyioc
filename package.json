@@ -4,7 +4,7 @@
   "description": "Stupidly simple recursive IoC service provider.",
   "main": "easyioc.js",
   "dependencies": {
-    "lodash-node": "~2.4.0"
+    "lodash": "~4.0.0"
   },
   "devDependencies": {},
   "scripts": {
